@@ -17,69 +17,57 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/images")
+@RequestMapping("/api/image")
 public class ImageUploadController {
 
     @Autowired
     ImageUploadService imageUploadService;
 
-    @Value("${image.upload.dir}") // Directory to store uploaded images
-    private String uploadDir;
-
-    @RequestMapping(value = "/image-metadata", method = RequestMethod.GET)
+    @RequestMapping(value = "/metadata", method = RequestMethod.GET)
     public List<ImageMetadata> getImageMetadata() {
 
         return imageUploadService.getAllImageMetadata();
 
     }
 
-    @RequestMapping(value = "/image-metadata", method = RequestMethod.POST)
-    public void insertEmployee(@RequestBody ImageMetadata imageMetadata) {
-        imageUploadService.insertImageMetadata(imageMetadata);
+    @RequestMapping(value = "/metadata/{userid}", method = RequestMethod.GET)
+    public List<ImageMetadata> getImageMetadata(@PathVariable String userid) {
+        return imageUploadService.getImageMetadataByUser(userid);
     }
 
-
-    // Upload endpoint
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
-        try {
-            // Validate file type
-            if (!file.getContentType().startsWith("image/")) {
-                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("Only image files are allowed.");
-            }
-
-            // Create the upload directory if it doesn't exist
-            File dir = new File(uploadDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
-            // Save the file to the upload directory
-            String filePath = uploadDir + File.separator + file.getOriginalFilename();
-            file.transferTo(new File(filePath));
-
-            return ResponseEntity.ok("Image uploaded successfully: " + file.getOriginalFilename());
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Image upload failed.");
+    @RequestMapping(value = "/metadata/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<byte[]> deleteImageMetadata(@PathVariable Long id) {
+        if(imageUploadService.deleteImageMetadataByUser(id)){
+            return new ResponseEntity<>(HttpStatus.OK);
         }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // Retrieve image by filename
-    @GetMapping("/{filename}")
-    public ResponseEntity<byte[]> getImage(@PathVariable String filename) {
-        try {
-            Path filePath = Paths.get(uploadDir, filename);
-            byte[] image = Files.readAllBytes(filePath);
+    @RequestMapping(value = "/{userid}/list", method = RequestMethod.GET)
+    public List<String> getImageList(@PathVariable String userid) {
+        return imageUploadService.getImageMetadataByUser(userid).stream().map(meta->meta.getFileName()).collect(Collectors.toList());
+    }
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_JPEG);  // Change this based on image type (JPEG, PNG, etc.)
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public ImageMetadata insertImage(@RequestBody ImageMetadata imageMetadata) {
+        return imageUploadService.insertImageMetadata(imageMetadata);
+    }
 
-            return new ResponseEntity<>(image, headers, HttpStatus.OK);
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
+    public ImageMetadata updateImage(@RequestBody ImageMetadata imageMetadata) {
+        return imageUploadService.updateImageMetadata(imageMetadata);
+    }
+
+    @RequestMapping(value = "/download", method = RequestMethod.POST)
+    public ResponseEntity<byte[]> downloadImage(@RequestBody ImageMetadata imageMetadata) {
+        if(imageUploadService.downloadImage(imageMetadata, "download location")){
+            return new ResponseEntity<>(HttpStatus.OK);
         }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 }
 

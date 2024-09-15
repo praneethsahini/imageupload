@@ -26,7 +26,7 @@ public class ImageMetadata {
     @Column(name = "is_active")
     private boolean isActive;
 
-    @Column(name = "createda_at")
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
