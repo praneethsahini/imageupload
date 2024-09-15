@@ -2,6 +2,7 @@ package com.pr.imageupload.service;
 
 import java.util.List;
 
+import com.pr.imageupload.common.DownloadRequest;
 import com.pr.imageupload.model.ImageMetadata;
 
 public interface ImageUploadService {
@@ -10,5 +11,5 @@ public interface ImageUploadService {
     boolean deleteImageMetadataByUser(long id);
     ImageMetadata insertImageMetadata(ImageMetadata imageMetadata);
     ImageMetadata updateImageMetadata(ImageMetadata imageMetadata);
-    boolean downloadImage(ImageMetadata imageMetadata, String downloadLocation);
+    boolean downloadImage(DownloadRequest downloadRequest);
 }

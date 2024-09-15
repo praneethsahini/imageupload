@@ -2,20 +2,12 @@ package com.pr.imageupload.controller;
 
 import com.pr.imageupload.model.ImageMetadata;
 import com.pr.imageupload.service.ImageUploadService;
+import com.pr.imageupload.common.DownloadRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -62,12 +54,11 @@ public class ImageUploadController {
     }
 
     @RequestMapping(value = "/download", method = RequestMethod.POST)
-    public ResponseEntity<byte[]> downloadImage(@RequestBody ImageMetadata imageMetadata) {
-        if(imageUploadService.downloadImage(imageMetadata, "download location")){
+    public ResponseEntity<byte[]> downloadImage(@RequestBody DownloadRequest downloadRequest) {
+        if(imageUploadService.downloadImage(downloadRequest)){
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 }
 

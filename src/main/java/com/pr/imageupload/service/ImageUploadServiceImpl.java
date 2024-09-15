@@ -4,8 +4,10 @@ package com.pr.imageupload.service;
 import java.util.List;
 import java.time.*;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.pr.imageupload.common.DownloadRequest;
 import com.pr.imageupload.model.ImageStorageDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ public class ImageUploadServiceImpl implements ImageUploadService {
     ImageStorageRepository imageStorageRepository;
 
     public List<ImageMetadata> getAllImageMetadata() {
-        List<ImageMetadata> imageMetadata = imageMetadataRepository.findAll();
+        List<ImageMetadata> imageMetadata = imageMetadataRepository.findAll().stream().filter(meta -> meta.isActive()).collect(Collectors.toUnmodifiableList());
         return imageMetadata;
     }
 
@@ -45,8 +47,8 @@ public class ImageUploadServiceImpl implements ImageUploadService {
         return true;
     }
 
-    public boolean downloadImage(ImageMetadata imageMetadata, String downloadLocation){
-        List<ImageStorageDetails> imageStorageDetailsList = imageStorageRepository.findByImageMetadataID(imageMetadata.getId());
+    public boolean downloadImage(DownloadRequest downloadRequest){
+        List<ImageStorageDetails> imageStorageDetailsList = imageStorageRepository.findByImageMetadataID(downloadRequest.getId());
         if(imageStorageDetailsList.size()>1){
             System.out.println("Multiple images found, cannot download");
             return false;
@@ -62,7 +64,7 @@ public class ImageUploadServiceImpl implements ImageUploadService {
                     throw new RuntimeException(e);
                 }
 
-                System.out.println("Download Image saved to: "+downloadLocation);
+                System.out.println("Download Image saved to: "+downloadRequest.getDownloadLocation());
             }).start();
             return true;
         }
@@ -80,7 +82,7 @@ public class ImageUploadServiceImpl implements ImageUploadService {
                 LocalDateTime.now(),
                 true,
                 "IN PROCESS",
-                "",
+                "s3://images/"+imageMetadata.getUserID()+"/"+ imageMetadata.getFileName(),
                 imageMetadataUploaded.getId()
         ));
 
