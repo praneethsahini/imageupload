@@ -1,0 +1,173 @@
+{
+	"info": {
+		"_postman_id": "fb151157-89bc-4a26-82ef-275649b1c8e9",
+		"name": "Image Metadata",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38345026"
+	},
+	"item": [
+		{
+			"name": "Get Image Metadata",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{service-uri}}/api/image/metadata",
+					"host": [
+						"{{service-uri}}"
+					],
+					"path": [
+						"api",
+						"image",
+						"metadata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Image Metadata By UserID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{service-uri}}/api/image/metadata/1234567",
+					"host": [
+						"{{service-uri}}"
+					],
+					"path": [
+						"api",
+						"image",
+						"metadata",
+						"1234567"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Image Metadata By UserID",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{service-uri}}/api/image/metadata/5",
+					"host": [
+						"{{service-uri}}"
+					],
+					"path": [
+						"api",
+						"image",
+						"metadata",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Image List By UserID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{service-uri}}/api/image/123456789/list",
+					"host": [
+						"{{service-uri}}"
+					],
+					"path": [
+						"api",
+						"image",
+						"123456789",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload image",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userID\": \"1234567\",\n    \"fileName\": \"abc.png\",\n    \"fileType\": \"png\",\n    \"fileSize\": \"30\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{service-uri}}/api/image/upload",
+					"host": [
+						"{{service-uri}}"
+					],
+					"path": [
+						"api",
+						"image",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Download image",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 18,\n    \"downloadLocation\": \"~/Downloads/images/\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{service-uri}}/api/image/download",
+					"host": [
+						"{{service-uri}}"
+					],
+					"path": [
+						"api",
+						"image",
+						"download"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update image metadata",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": 16,\n    \"fileName\": \"abcdef.png\",\n    \"fileSize\": 35\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{service-uri}}/api/image/update",
+					"host": [
+						"{{service-uri}}"
+					],
+					"path": [
+						"api",
+						"image",
+						"update"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
