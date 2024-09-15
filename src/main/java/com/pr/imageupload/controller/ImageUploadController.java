@@ -3,6 +3,7 @@ package com.pr.imageupload.controller;
 import com.pr.imageupload.model.ImageMetadata;
 import com.pr.imageupload.service.ImageUploadService;
 import com.pr.imageupload.common.DownloadRequest;
+import com.pr.imageupload.validation.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,13 +45,21 @@ public class ImageUploadController {
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public ImageMetadata insertImage(@RequestBody ImageMetadata imageMetadata) {
-        return imageUploadService.insertImageMetadata(imageMetadata);
+    public ResponseEntity<ImageMetadata> insertImage(@RequestBody ImageMetadata imageMetadata) {
+
+        if(!Request.insertImageMetadataValidation(imageMetadata)){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<ImageMetadata>(imageUploadService.insertImageMetadata(imageMetadata), HttpStatus.OK );
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    public ImageMetadata updateImage(@RequestBody ImageMetadata imageMetadata) {
-        return imageUploadService.updateImageMetadata(imageMetadata);
+    public ResponseEntity<ImageMetadata> updateImage(@RequestBody ImageMetadata imageMetadata) {
+
+        if(!Request.updateImageMetadataValidation(imageMetadata)){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<ImageMetadata>(imageUploadService.updateImageMetadata(imageMetadata), HttpStatus.OK );
     }
 
     @RequestMapping(value = "/download", method = RequestMethod.POST)

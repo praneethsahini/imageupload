@@ -1,6 +1,7 @@
 package com.pr.imageupload.service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.time.*;
 import java.util.Optional;
@@ -8,6 +9,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.pr.imageupload.common.DownloadRequest;
+import com.pr.imageupload.validation.*;
 import com.pr.imageupload.model.ImageStorageDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,22 +34,31 @@ public class ImageUploadServiceImpl implements ImageUploadService {
     }
 
     public List<ImageMetadata> getImageMetadataByUser(String userID) {
-        List<ImageMetadata> imageMetadata = imageMetadataRepository.findByUserID(userID).stream().filter(meta -> meta.isActive()).collect(Collectors.toUnmodifiableList());
-        return imageMetadata;
+        if(Request.getImageMetadataByUserValidation(userID)){
+            List<ImageMetadata> imageMetadata = imageMetadataRepository.findByUserID(userID).stream().filter(meta -> meta.isActive()).collect(Collectors.toUnmodifiableList());
+            return imageMetadata;
+        }
+        return new ArrayList<ImageMetadata>() {};
     }
 
     public boolean deleteImageMetadataByUser(long id){
-        Optional<ImageMetadata> imageMetadataOpt = imageMetadataRepository.findById(id);
-        if (imageMetadataOpt.isEmpty()){
-            return false;
+        if(Request.deleteImageMetadataValidation(id)){
+            Optional<ImageMetadata> imageMetadataOpt = imageMetadataRepository.findById(id);
+            if (imageMetadataOpt.isEmpty()){
+                return false;
+            }
+            ImageMetadata imageMetadata = imageMetadataOpt.get();
+            imageMetadata.setActive(false);
+            imageMetadataRepository.save(imageMetadata);
+            return true;
         }
-        ImageMetadata imageMetadata = imageMetadataOpt.get();
-        imageMetadata.setActive(false);
-        imageMetadataRepository.save(imageMetadata);
-        return true;
+        return false;
     }
 
     public boolean downloadImage(DownloadRequest downloadRequest){
+        if(!Request.downloadImageValidation(downloadRequest)){
+            return false;
+        }
         List<ImageStorageDetails> imageStorageDetailsList = imageStorageRepository.findByImageMetadataID(downloadRequest.getId());
         if(imageStorageDetailsList.size()>1){
             System.out.println("Multiple images found, cannot download");
